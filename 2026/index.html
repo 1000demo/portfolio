@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ketan Gawande – UI Developer</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --card: #16161f;
+      --accent: #00f5a0;
+      --accent2: #00d9f5;
+      --muted: #555570;
+      --text: #e8e8f0;
+      --text-dim: #9999b5;
+      --border: rgba(255,255,255,0.06);
+      --glow: 0 0 40px rgba(0,245,160,0.15);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    .cursor {
+      width: 12px; height: 12px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease;
+      mix-blend-mode: exclusion;
+    }
+    .cursor-ring {
+      width: 40px; height: 40px;
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: all 0.15s ease;
+      opacity: 0.5;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.4;
+    }
+
+    .orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; animation: orbFloat 8s ease-in-out infinite; }
+    .orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(0,245,160,0.12), transparent 70%); top: -100px; right: -100px; }
+    .orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,217,245,0.1), transparent 70%); bottom: 100px; left: -100px; animation-delay: -4s; }
+    @keyframes orbFloat { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(30px) scale(1.05); } }
+
+    /* NAVBAR */
+    .navbar {
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 0;
+      position: fixed; top: 0; width: 100%;
+      z-index: 100;
+    }
+    .navbar-brand {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.3rem;
+      color: var(--text) !important;
+      letter-spacing: -0.5px;
+    }
+    .navbar-brand span { color: var(--accent); }
+    .nav-link {
+      font-size: 0.78rem;
+      color: var(--text-dim) !important;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.4rem 1rem !important;
+      transition: color 0.3s;
+      position: relative;
+    }
+    .nav-link::after {
+      content: ''; position: absolute; bottom: 0; left: 50%;
+      width: 0; height: 1px; background: var(--accent);
+      transform: translateX(-50%); transition: width 0.3s;
+    }
+    .nav-link:hover { color: var(--accent) !important; }
+    .nav-link:hover::after { width: 60%; }
+
+    /* HERO */
+    #hero { min-height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; }
+    .hero-tag {
+      display: inline-block; font-size: 0.72rem; color: var(--accent);
+      letter-spacing: 0.15em; text-transform: uppercase;
+      border: 1px solid rgba(0,245,160,0.3); padding: 0.35rem 0.9rem;
+      border-radius: 100px; margin-bottom: 1.5rem;
+      animation: fadeUp 0.8s 0.2s both;
+    }
+    .hero-title {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: clamp(2.8rem, 7vw, 6rem);
+      line-height: 0.92; letter-spacing: -3px;
+      animation: fadeUp 0.8s 0.4s both;
+    }
+    .hero-title .line-accent { -webkit-text-stroke: 1px var(--accent); color: transparent; }
+    .hero-sub {
+      font-size: 0.85rem; color: var(--text-dim); line-height: 1.8;
+      max-width: 400px; margin-top: 1.5rem;
+      animation: fadeUp 0.8s 0.6s both;
+    }
+    .hero-cta { margin-top: 2.5rem; animation: fadeUp 0.8s 0.8s both; }
+    .btn-glow {
+      background: var(--accent); color: #000; border: none;
+      padding: 0.75rem 2rem; font-family: 'DM Mono', monospace;
+      font-size: 0.8rem; font-weight: 500; letter-spacing: 0.08em;
+      text-transform: uppercase; border-radius: 4px;
+      transition: all 0.3s; text-decoration: none; display: inline-block;
+    }
+    .btn-glow:hover { transform: translateY(-3px); box-shadow: 0 10px 40px rgba(0,245,160,0.4); color: #000; }
+    .btn-outline-glow {
+      background: transparent; color: var(--text); border: 1px solid var(--border);
+      padding: 0.75rem 2rem; font-family: 'DM Mono', monospace;
+      font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase;
+      border-radius: 4px; transition: all 0.3s; text-decoration: none;
+      display: inline-block; margin-left: 1rem;
+    }
+    .btn-outline-glow:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-3px); }
+
+    .hero-code {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 2rem; font-size: 0.78rem;
+      color: var(--text-dim); line-height: 2;
+      position: relative; animation: fadeUp 0.8s 1s both;
+      box-shadow: var(--glow);
+    }
+    .hero-code::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 36px; background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid var(--border); border-radius: 12px 12px 0 0;
+    }
+    .dots { position: absolute; top: 12px; left: 16px; display: flex; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; } .dot-y { background: #febc2e; } .dot-g { background: #28c840; }
+    .code-keyword { color: var(--accent2); }
+    .code-fn { color: var(--accent); }
+    .code-str { color: #f1c40f; }
+    .code-comment { color: var(--muted); }
+    .typing-cursor { display: inline-block; width: 2px; height: 1em; background: var(--accent); animation: blink 1s infinite; vertical-align: middle; }
+    @keyframes blink { 0%,50% { opacity: 1; } 51%,100% { opacity: 0; } }
+
+    /* ── Code block CSS variables & tokens ── */
+    :root {
+      --code-keyword:  #c792ea;
+      --code-prop:     #82aaff;
+      --code-str:      #c3e88d;
+      --code-op:       #89ddff;
+      --code-brace:    #ffcb6b;
+      --code-var:      #00f5a0;
+      --pill-html:     #e34c26;
+      --pill-css:      #264de4;
+      --pill-ng:       #dd0031;
+      --pill-bs:       #7952b3;
+      --pill-loc:      #00d9f5;
+      --pill-focus:    #f1c40f;
+    }
+
+    .code-prop    { color: var(--code-prop); }
+    .code-op      { color: var(--code-op); }
+    .code-brace   { color: var(--code-brace); }
+    .code-var     { color: var(--code-var); font-weight: 600; }
+    .code-keyword { color: var(--code-keyword); }
+
+    /* animated line entrance */
+    .code-line {
+      display: block;
+      opacity: 0;
+      transform: translateX(-8px);
+      animation: codeLine 0.35s ease forwards;
+      animation-delay: calc(0.08s * var(--i) + 1s);
+      white-space: pre;
+    }
+    @keyframes codeLine {
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* inline pill badges on string values */
+    .code-str {
+      color: var(--code-str);
+      padding: 0.05em 0.45em;
+      border-radius: 4px;
+      background: rgba(195,232,141,0.08);
+      border: 1px solid rgba(195,232,141,0.15);
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .code-str:hover { background: rgba(195,232,141,0.18); border-color: rgba(195,232,141,0.4); }
+
+    /* tech-specific pill colours */
+    .pill-html { color: var(--pill-html) !important; background: rgba(227,76,38,0.1) !important; border-color: rgba(227,76,38,0.25) !important; }
+    .pill-html:hover { background: rgba(227,76,38,0.2) !important; }
+    .pill-css  { color: var(--pill-css)  !important; background: rgba(38,77,228,0.12) !important; border-color: rgba(38,77,228,0.3) !important; }
+    .pill-css:hover  { background: rgba(38,77,228,0.22)  !important; }
+    .pill-ng   { color: var(--pill-ng)   !important; background: rgba(221,0,49,0.1)   !important; border-color: rgba(221,0,49,0.25)  !important; }
+    .pill-ng:hover   { background: rgba(221,0,49,0.2)    !important; }
+    .pill-bs   { color: var(--pill-bs)   !important; background: rgba(121,82,179,0.12) !important; border-color: rgba(121,82,179,0.3) !important; }
+    .pill-bs:hover   { background: rgba(121,82,179,0.22) !important; }
+    .loc-str   { color: var(--pill-loc)  !important; background: rgba(0,217,245,0.08) !important; border-color: rgba(0,217,245,0.2)  !important; }
+    .loc-str:hover   { background: rgba(0,217,245,0.18)  !important; }
+    .focus-str { color: var(--pill-focus)!important; background: rgba(241,196,15,0.08)!important; border-color: rgba(241,196,15,0.2) !important; }
+    .focus-str:hover { background: rgba(241,196,15,0.18) !important; }
+
+    /* subtle left-border on stack lines */
+    .code-stack-line { border-left: 2px solid rgba(0,245,160,0.25); margin-left: 0.5rem; padding-left: 0.5rem; }
+
+    .stats-row { border-top: 1px solid var(--border); margin-top: 2.5rem; padding-top: 2rem; animation: fadeUp 0.8s 1s both; }
+    .stat-num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 2.2rem; color: var(--accent); }
+    .stat-label { font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; }
+
+    /* SECTIONS */
+    section { position: relative; z-index: 1; }
+    .section-label { font-size: 0.7rem; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .section-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(2rem, 4vw, 3.2rem); letter-spacing: -1.5px; line-height: 1; }
+    .divider-line { width: 40px; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); margin: 1.5rem 0; }
+
+    /* PORTFOLIO */
+    #portfolio { padding: 8rem 0; background: var(--bg); }
+    .project-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      position: relative; opacity: 0; transform: translateY(30px);
+    }
+    .project-card.visible { opacity: 1; transform: translateY(0); }
+    .project-card:hover { border-color: rgba(0,245,160,0.3); transform: translateY(-8px) !important; box-shadow: 0 30px 60px rgba(0,0,0,0.5), var(--glow); }
+    .project-img { height: 210px; position: relative; overflow: hidden; background: #0d0d14; }
+    .proj-screenshot { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform 0.6s cubic-bezier(0.23,1,0.32,1), filter 0.4s; filter: brightness(0.92); display: block; }
+    .project-card:hover .proj-screenshot { transform: scale(1.06); filter: brightness(0.55); }
+    .project-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 60%); opacity: 0; transition: opacity 0.4s; }
+    .project-card:hover .project-overlay { opacity: 1; }
+    .proj-visit-btn {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0.8);
+      background: var(--accent); color: #000;
+      font-family: "DM Mono", monospace; font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.55rem 1.4rem; border-radius: 4px; text-decoration: none;
+      opacity: 0; transition: all 0.35s cubic-bezier(0.23,1,0.32,1);
+      white-space: nowrap; z-index: 2;
+      box-shadow: 0 6px 24px rgba(0,245,160,0.35);
+    }
+    .project-card:hover .proj-visit-btn { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+    /* Filter tabs */
+    .filter-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .filter-btn {
+      background: var(--card); border: 1px solid var(--border);
+      color: var(--text-dim); font-family: "DM Mono", monospace;
+      font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.4rem 1.1rem; border-radius: 100px; cursor: pointer; transition: all 0.3s;
+    }
+    .filter-btn:hover, .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #000; }
+    .project-item.hidden { opacity: 0 !important; transform: scale(0.95) !important; pointer-events: none; display: none; }
+    .project-body { padding: 1.5rem; }
+    .project-tag { font-size: 0.65rem; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .project-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 0.6rem; color: var(--text); }
+    .project-desc { font-size: 0.78rem; color: var(--text-dim); line-height: 1.7; }
+    .project-tech { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
+    .tech-pill { font-size: 0.65rem; padding: 0.2rem 0.6rem; background: rgba(0,245,160,0.08); color: var(--accent); border-radius: 100px; border: 1px solid rgba(0,245,160,0.2); }
+    .project-links { margin-top: 1.2rem; display: flex; gap: 0.8rem; }
+    .proj-link { font-size: 0.72rem; color: var(--text-dim); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.3s; }
+    .proj-link:hover { color: var(--accent); }
+
+    /* ABOUT */
+    #about { padding: 8rem 0; background: var(--surface); }
+    .about-img {
+      width: 100%; max-width: 360px; aspect-ratio: 3/4;
+      background: linear-gradient(135deg, var(--card) 0%, #0a1a0f 100%);
+      border-radius: 20px; border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 6rem; position: relative; overflow: hidden;
+    }
+    .about-img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0,245,160,0.05), transparent 60%); }
+    .about-img-badge {
+      position: absolute; bottom: -16px; right: -16px;
+      background: var(--accent); color: #000;
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 0.75rem; padding: 0.9rem 1.1rem; border-radius: 12px;
+      text-align: center; line-height: 1.3;
+      box-shadow: 0 10px 30px rgba(0,245,160,0.3);
+    }
+    .about-img-badge span { display: block; font-size: 1.6rem; }
+    .skill-bar-wrap { margin-top: 1.5rem; }
+    .skill-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.4rem; }
+    .skill-bar { height: 4px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+    .skill-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 100px; width: 0; transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1); }
+    .about-tools { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+    .tool-chip { background: var(--card); border: 1px solid var(--border); padding: 0.4rem 1rem; border-radius: 6px; font-size: 0.72rem; color: var(--text-dim); transition: all 0.3s; }
+    .tool-chip:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    /* EXPERIENCE TIMELINE */
+    #experience { padding: 8rem 0; background: var(--bg); }
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, var(--accent), var(--accent2), transparent); }
+    .timeline-item { position: relative; margin-bottom: 2.5rem; }
+    .timeline-item::before {
+      content: ''; position: absolute;
+      left: -2.4rem; top: 6px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(0,245,160,0.6);
+    }
+    .timeline-date { font-size: 0.7rem; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 0.3rem; }
+    .timeline-role { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem; margin-bottom: 0.2rem; }
+    .timeline-org { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.6rem; }
+    .timeline-desc { font-size: 0.78rem; color: var(--text-dim); line-height: 1.8; }
+
+    /* CONTACT */
+    #contact { padding: 8rem 0; background: var(--surface); }
+    .contact-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 3rem; position: relative; overflow: hidden; }
+    .contact-card::before { content: ''; position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(0,245,160,0.08), transparent 70%); pointer-events: none; }
+    .form-ctrl {
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      color: var(--text); border-radius: 8px; padding: 0.85rem 1.1rem;
+      font-family: 'DM Mono', monospace; font-size: 0.82rem; width: 100%;
+      transition: all 0.3s;
+    }
+    .form-ctrl:focus { outline: none; border-color: var(--accent); background: rgba(0,245,160,0.04); box-shadow: 0 0 0 3px rgba(0,245,160,0.1); }
+    .form-ctrl::placeholder { color: var(--muted); }
+    textarea.form-ctrl { resize: vertical; min-height: 140px; }
+    .form-label { font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem; display: block; }
+    .contact-info-item { display: flex; align-items: center; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--border); }
+    .contact-info-item:last-child { border-bottom: none; }
+    .contact-icon { width: 42px; height: 42px; background: rgba(0,245,160,0.08); border: 1px solid rgba(0,245,160,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+    .contact-info-text a { color: var(--text-dim); text-decoration: none; font-size: 0.82rem; transition: color 0.3s; }
+    .contact-info-text a:hover { color: var(--accent); }
+    .contact-info-title { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+
+    footer { border-top: 1px solid var(--border); padding: 2rem 0; text-align: center; font-size: 0.72rem; color: var(--muted); }
+    footer span { color: var(--accent); }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    .reveal { opacity: 0; transform: translateY(30px); transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; } .reveal-delay-2 { transition-delay: 0.2s; } .reveal-delay-3 { transition-delay: 0.3s; }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="#">ketan<span>.</span>dev</a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span style="color:var(--accent); font-size:1.4rem;">☰</span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navMenu">
+      <ul class="navbar-nav gap-1">
+        <li class="nav-item"><a class="nav-link" href="#portfolio">Portfolio</a></li>
+        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="#experience">Experience</a></li>
+        <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="container py-5">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <div class="hero-tag">✦ Open to opportunities</div>
+        <h1 class="hero-title">
+          UI<br>
+          <span class="line-accent">DEVEL</span><br>
+          OPER.
+        </h1>
+        <p class="hero-sub">
+          11+ years crafting pixel-perfect, responsive interfaces for mobile, tablet, and desktop. 
+          Pune, Maharashtra — working globally.
+        </p>
+        <div class="hero-cta">
+          <a href="#portfolio" class="btn-glow">View Work</a>
+          <a href="#contact" class="btn-outline-glow">Get in Touch</a>
+        </div>
+        <div class="stats-row row g-4">
+          <div class="col-4">
+            <div class="stat-num counter" data-target="11">0</div>
+            <div class="stat-label">Years Exp.</div>
+          </div>
+          <div class="col-4">
+            <div class="stat-num"><span class="counter" data-target="30">0</span>+</div>
+            <div class="stat-label">Projects</div>
+          </div>
+          <div class="col-4">
+            <div class="stat-num counter" data-target="4">0</div>
+            <div class="stat-label">Companies</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="hero-code">
+          <div class="dots">
+            <div class="dot dot-r"></div>
+            <div class="dot dot-y"></div>
+            <div class="dot dot-g"></div>
+          </div>
+          <div class="code-body" style="margin-top: 1.5rem">
+            <div class="code-line" style="--i:0"><span class="code-comment">//config.js</span></div>
+            <div class="code-line" style="--i:1"><span class="code-keyword">const</span> <span class="code-var">developer</span> <span class="code-op">=</span> <span class="code-brace">{</span></div>
+            <div class="code-line" style="--i:2">&nbsp;&nbsp;<span class="code-prop">name</span><span class="code-op">:</span> <span class="code-str">"Ket"</span><span class="code-op">,</span></div>
+            <div class="code-line" style="--i:3">&nbsp;&nbsp;<span class="code-prop">role</span><span class="code-op">:</span> <span class="code-str">"UI Developer"</span><span class="code-op">,</span></div>
+            <div class="code-line" style="--i:4">&nbsp;&nbsp;<span class="code-prop">stack</span><span class="code-op">:</span> <span class="code-brace">[</span></div>
+            <div class="code-line code-stack-line" style="--i:5">&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-str pill-html">"HTML5"</span><span class="code-op">,</span> <span class="code-str pill-css">"CSS3"</span><span class="code-op">,</span></div>
+            <div class="code-line code-stack-line" style="--i:6">&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-str pill-ng">"Angular"</span><span class="code-op">,</span> <span class="code-str pill-bs">"Bootstrap"</span></div>
+            <div class="code-line" style="--i:7">&nbsp;&nbsp;<span class="code-brace">]</span><span class="code-op">,</span></div>
+            <div class="code-line" style="--i:8">&nbsp;&nbsp;<span class="code-prop">location</span><span class="code-op">:</span> <span class="code-str loc-str">"Pune, India"</span><span class="code-op">,</span></div>
+            <div class="code-line" style="--i:9">&nbsp;&nbsp;<span class="code-prop">focus</span><span class="code-op">:</span> <span class="code-str focus-str">"pixel-perfect UI"</span></div>
+            <div class="code-line" style="--i:10"><span class="code-brace">}</span><span class="code-op">;</span><span class="typing-cursor"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="portfolio">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label">✦ Selected Work</p>
+      <h2 class="section-title">PORTFOLIO</h2>
+      <div class="divider-line"></div>
+      <p style="font-size:0.85rem; color: var(--text-dim); max-width:520px; line-height:1.8; margin-bottom: 2rem;">
+        30+ real-world projects spanning healthcare, e-commerce, real estate, travel, emailer templates &amp; more — all built with clean, responsive HTML/CSS.
+      </p>
+
+      <!-- Filter tabs -->
+      <div class="filter-tabs reveal" style="margin-bottom:2.5rem;">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="healthcare">Healthcare</button>
+        <button class="filter-btn" data-filter="ecommerce">E-Commerce</button>
+        <button class="filter-btn" data-filter="realestate">Real Estate</button>
+        <button class="filter-btn" data-filter="demo">Demo / UI</button>
+        <button class="filter-btn" data-filter="emailer">Emailer</button>
+      </div>
+    </div>
+
+    <div class="row g-4" id="projectGrid">
+
+      <!-- 1. RadFlow -->
+      <div class="col-md-6 col-lg-4 project-item" data-cat="healthcare">
+        <div class="project-card h-100">
+          <div class="project-img">
+            <img src="https://1000demo.github.io/portfolio/img/portfolio/rf.png" alt="RadFlow" class="proj-screenshot">
+            <div class="project-overlay"></div>
+            <a href="https://radflow.collaborativeimaging.com/#/home" target="_blank" class="proj-visit-btn">↗ Visit</a>
+          </div>
+          <div class="project-body">
+            <div class="project-tag">Healthcare · PACS</div>
+            <div class="project-name">RadFlow – Collaborative Imaging</div>
+            <div class="project-desc">Picture archiving &amp; communication system with complex admin UI for diagnostic radiology workflows.</div>
+            <div class="project-tech">
+              <span class="tech-pill">Angular</span><span class="tech-pill">Bootstrap</span><span class="tech-pill">CSS3</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Civie -->
+      <div class="col-md-6 col-lg-4 project-item" data-cat="healthcare">
+        <div class="project-card h-100">
+          <div class="project-img">
+            <img src="https://1000demo.github.io/portfolio/img/portfolio/16.png" alt="Civie" class="proj-screenshot">
+            <div class="project-overlay"></div>
+            <a href="https://civie.com/" target="_blank" class="proj-visit-btn">↗ Visit</a>
+          </div>
+          <div class="project-body">
+            <div class="project-tag">Healthcare · SaaS</div>
+            <div class="project-name">Civie – Clinical Platform</div>
+            <div class="project-desc">Responsive clinical management UI with admin dashboard &amp; user management panels from Figma designs.</div>
+            <div class="project-tech">
+              <span class="tech-pill">HTML5</span><span class="tech-pill">SASS</span><span class="tech-pill">jQuery</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Radico -->
+      <div class="col-md-6 col-lg-4 project-item" data-cat="healthcare">
+        <div class="project-card h-100">
+          <div class="project-img">
+            <img src="https://1000demo.github.io/portfolio/img/portfolio/17.png" alt="Radico" class="proj-screenshot">
+            <div class="project-overlay"></div>
+            <a href="https://radico.radamatic.com/" target="_blank" class="proj-visit-btn">↗ Visit</a>
+          </div>
+          <div class="project-body">
+            <div class="project-tag">Healthcare · Dashboard</div>
+            <div class="project-name">Radico – Radamatic</div>
+            <div class="project-desc">Complex admin dashboard with data-heavy UI, cross-browser compatible across Chrome and IE11.</div>
+            <div class="project-tech">
+              <span class="tech-pill">Angular</span><span class="tech-pill">Tailwind</span><span class="tech-pill">CSS3</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Travelastic -->
+      <div class="col-md-6 col-lg-4 project-item" data-cat="demo">
+        <div class="project-card h-100">
+          <div class="project-img">
+            <img src="https://1000demo.github.io/portfolio/img/portfolio/04.png" alt="Travelastic" class="proj-screenshot">
+            <div class="project-overlay"></div>
+            <a href="https://1000demo.github.io/portfolio/sites/travelastic/index.html" target="_blank" class="proj-visit-btn">↗ Visit</a>
+          </div>
+          <div class="project-body">
+            <div class="project-tag">Travel · UI Demo</div>
+            <div class="project-name">Travelastic</div>
+            <div class="project-desc">Fully responsive travel website UI demo showcasing layout, hero sections, and card components.</div>
+            <div class="project-tech">
+              <span class="tech-pill">HTML5</span><span class="tech-pill">CSS3</span><span class="tech-pill">Bootstrap</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. KP Pharma -->
+      <div class="col-md-6 col-lg-4 project-item" data-cat="healthcare">
+        <div class="project-card h-100">
+          <div class="project-img">
+            <img src="https://1000demo.github.io/portfolio/img/portfolio/11.png" alt="KP Pharma" class="proj-screenshot">
+            <div class="project-overlay"></div>
+            <a href="http://kppharma.in/" target="_blank" class="proj-visit-btn">↗ Visit</a>
+          </div>
+          <div class="project-body">
+            <div class="project-tag">Pharma · Corporate</div>
+            <div class="project-name">KP Pharma</div>
+            <div class="project-desc">Corporate pharmaceutical website with responsive layout, product showcase, and contact integration.</div>
+            <div class="project-tech">
+              <span class="tech-pill">HTML5</span><span class="tech-pill">CSS3</span><span class="tech-pill">jQuery</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Medico -->
+      <div class="col-md-6 col-lg-4 project-item" data-cat="healthcare">
+        <div class="project-card h-100">
+          <div class="project-img">
+            <img src="https://1000demo.github.io/portfolio/img/portfolio/14.png" alt="Medico" class="proj-screenshot">
+            <div class="project-overlay"></div>
+            <a href="https://1000demo.github.io/portfolio/sites/medico/index.html" target="_blank" class="proj-visit-btn">↗ Visit</a>
+          </div>
+          <div class="project-body">
+            <div class="project-tag">Healthcare · Medical UI</div>
+            <div class="project-name">Medico – Medical UI</div>
+            <div class="project-desc">Clean medical/clinic landing page UI demo with appointment booking layout and responsive grid.</div>
+            <div class="project-tech">
+              <span class="tech-pill">HTML5</span><span class="tech-pill">CSS3</span><span class="tech-pill">Bootstrap</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. Setu Advertising -->
+      <div class="col-md-6 col-lg-4 project-item" data-cat="demo">
+        <div class="project-card h-100">
+          <div class="project-img">
+            <img src="https://1000demo.github.io/portfolio/img/portfolio/05.png" alt="Setu Advertising" class="proj-screenshot">
+            <div class="project-overlay"></div>
+            <a href="http://www.setuadvertising.com/" target="_blank" class="proj-visit-btn">↗ Visit</a>
+          </div>
+          <div class="project-body">
+            <div class="project-tag">Agency · WordPress</div>
+            <div class="project-name">Setu Advertising</div>
+            <div class="project-desc">Full-service advertising agency website built on WordPress CMS with theme customization and contact forms.</div>
+            <div class="project-tech">
+              <span class="tech-pill">WordPress</span><span class="tech-pill">CSS3</span><span class="tech-pill">HTML5</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. Digital Art VRE -->
+      <div class="col-md-6 col-lg-4 project-item" data-cat="demo">
+        <div class="project-card h-100">
+          <div class="project-img">
+            <img src="https://1000demo.github.io/portfolio/img/portfolio/01.png" alt="Digital Art VRE" class="proj-screenshot">
+            <div class="project-overlay"></div>
+            <a href="http://digitalartvre.com/" target="_blank" class="proj-visit-btn">↗ Visit</a>
+          </div>
+          <div class="project-body">
+            <div class="project-tag">Creative · WordPress</div>
+            <div class="project-name">Digital Art VRE</div>
+            <div class="project-desc">Creative digital art agency website with WordPress CMS, gallery layout, and responsive design.</div>
+            <div class="project-tech">
+              <span class="tech-pill">WordPress</span><span class="tech-pill">CSS3</span><span class="tech-pill">HTML5</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 9. Jewellery -->
+      <div class="col-md-6 col-lg-4 project-item" data-cat="ecommerce">
+        <div class="project-card h-100">
+          <div class="project-img">
+            <img src="https://1000demo.github.io/portfolio/img/portfolio/09.png" alt="Jewellery" class="proj-screenshot">
+            <div class="project-overlay"></div>
+            <a href="https://1000demo.github.io/portfolio/sites/jewellery/index.html" target="_blank" class="proj-visit-btn">↗ Visit</a>
+          </div>
+          <div class="project-body">
+            <div class="project-tag">E-Commerce · Jewellery</div>
+            <div class="project-name">Jewellery Store UI</div>
+            <div class="project-desc">Elegant jewellery e-commerce UI demo with product grid, filtering, and pixel-perfect responsive layout.</div>
+            <div class="project-tech">
+              <span class="tech-pill">HTML5</span><span class="tech-pill">CSS3</span><span class="tech-pill">Bootstrap</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10. Brayola -->
+      <div class="col-md-6 col-lg-4 project-item" data-cat="ecommerce">
+        <div class="project-card h-100">
+          <div class="project-img">
+            <img src="https://1000demo.github.io/portfolio/img/portfolio/13.png" alt="Brayola" class="proj-screenshot">
+            <div class="project-overlay"></div>
+            <a href="https://shop.brayola.com/collections/bras/products/wacoal-ultimate-side-smoother-contour-bra-853281" target="_blank" class="proj-visit-btn">↗ Visit</a>
+          </div>
+          <div class="project-body">
+            <div class="project-tag">E-Commerce · Fashion</div>
+            <div class="project-name">Brayola – Wacoal</div>
+            <div class="project-desc">Product detail page UI for a fashion e-commerce platform with responsive layout and cross-device support.</div>
+            <div class="project-tech">
+              <span class="tech-pill">HTML5</span><span class="tech-pill">CSS3</span><span class="tech-pill">jQuery</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 11. Beyond Yoga -->
+      <div class="col-md-6 col-lg-4 project-item" data-cat="ecommerce">
+        <div class="project-card h-100">
+          <div class="project-img">
+            <img src="https://1000demo.github.io/portfolio/img/portfolio/06.png" alt="Beyond Yoga" class="proj-screenshot">
+            <div class="project-overlay"></div>
+            <a href="http://www.beyondyoga.com/tops/tees/roll-the-slice-tee.html?color=black" target="_blank" class="proj-visit-btn">↗ Visit</a>
+          </div>
+          <div class="project-body">
+            <div class="project-tag">E-Commerce · Activewear</div>
+            <div class="project-name">Beyond Yoga</div>
+            <div class="project-desc">Premium activewear product page UI. Pixel-perfect, fully responsive across desktop, tablet, and mobile.</div>
+            <div class="project-tech">
+              <span class="tech-pill">HTML5</span><span class="tech-pill">CSS3</span><span class="tech-pill">JavaScript</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 12. Eaton & Burke -->
+      <div class="col-md-6 col-lg-4 project-item" data-cat="ecommerce">
+        <div class="project-card h-100">
+          <div class="project-img">
+            <img src="https://1000demo.github.io/portfolio/img/portfolio/10.png" alt="Eaton Burke" class="proj-screenshot">
+            <div class="project-overlay"></div>
+            <a href="http://eatonandburke.in/" target="_blank" class="proj-visit-btn">↗ Visit</a>
+          </div>
+          <div class="project-body">
+            <div class="project-tag">E-Commerce · Retail</div>
+            <div class="project-name">Eaton &amp; Burke</div>
+            <div class="project-desc">Retail e-commerce website with clean product layouts, responsive grid, and cross-browser compatibility.</div>
+            <div class="project-tech">
+              <span class="tech-pill">HTML5</span><span class="tech-pill">CSS3</span><span class="tech-pill">jQuery</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 13. Pandit Javdekar -->
+      <div class="col-md-6 col-lg-4 project-item" data-cat="realestate">
+        <div class="project-card h-100">
+          <div class="project-img">
+            <img src="https://1000demo.github.io/portfolio/img/portfolio/03.png" alt="Pandit Javdekar" class="proj-screenshot">
+            <div class="project-overlay"></div>
+            <a href="http://www.panditjavdekar.com/red-earth/" target="_blank" class="proj-visit-btn">↗ Visit</a>
+          </div>
+          <div class="project-body">
+            <div class="project-tag">Real Estate · WordPress</div>
+            <div class="project-name">Pandit Javdekar – Red Earth</div>
+            <div class="project-desc">Real estate project site on WordPress. Theme config, plugin management, contact forms &amp; enquiry system.</div>
+            <div class="project-tech">
+              <span class="tech-pill">WordPress</span><span class="tech-pill">HTML5</span><span class="tech-pill">CSS3</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 14. My Demo -->
+      <div class="col-md-6 col-lg-4 project-item" data-cat="demo">
+        <div class="project-card h-100">
+          <div class="project-img">
+            <img src="https://1000demo.github.io/portfolio/img/portfolio/15.png" alt="My Demo" class="proj-screenshot">
+            <div class="project-overlay"></div>
+            <a href="http://kg23.ga/mydemo/1" target="_blank" class="proj-visit-btn">↗ Visit</a>
+          </div>
+          <div class="project-body">
+            <div class="project-tag">Personal · UI Demo</div>
+            <div class="project-name">My Demo – UI Showcase</div>
+            <div class="project-desc">Personal UI demo project showcasing custom components, layout techniques, and front-end skills.</div>
+            <div class="project-tech">
+              <span class="tech-pill">HTML5</span><span class="tech-pill">CSS3</span><span class="tech-pill">JavaScript</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 15. The Edge -->
+      <div class="col-md-6 col-lg-4 project-item" data-cat="realestate">
+        <div class="project-card h-100">
+          <div class="project-img">
+            <img src="https://1000demo.github.io/portfolio/img/portfolio/02.png" alt="The Edge" class="proj-screenshot">
+            <div class="project-overlay"></div>
+            <a href="http://the-edge.in/" target="_blank" class="proj-visit-btn">↗ Visit</a>
+          </div>
+          <div class="project-body">
+            <div class="project-tag">Real Estate · WordPress</div>
+            <div class="project-name">The Edge</div>
+            <div class="project-desc">Real estate development site built with WordPress. Complete UI, responsive layout, and content management setup.</div>
+            <div class="project-tech">
+              <span class="tech-pill">WordPress</span><span class="tech-pill">CSS3</span><span class="tech-pill">HTML5</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Emailer 1 -->
+      <div class="col-md-6 col-lg-4 project-item" data-cat="emailer">
+        <div class="project-card h-100">
+          <div class="project-img" style="background:#0d0d14;overflow:hidden;position:relative;height:210px;">
+            <iframe src="https://1000demo.github.io/etdemo/e1" style="position:absolute;top:0;left:0;width:166%;height:166%;border:none;transform:scale(0.6);transform-origin:top left;pointer-events:none;" scrolling="no" loading="lazy"></iframe>
+          </div>
+          <div class="project-body">
+            <div class="project-tag">Emailer · HTML Template</div>
+            <div class="project-name">Email Template – E1</div>
+            <div class="project-desc">Responsive HTML email template with clean layout, optimized for all major email clients and devices.</div>
+            <div class="project-tech"><span class="tech-pill">HTML5</span><span class="tech-pill">CSS3</span><span class="tech-pill">Email</span></div>
+            <div class="project-links"><a href="https://1000demo.github.io/etdemo/e1" target="_blank" class="proj-link">↗ View Live</a></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Emailer 2 -->
+      <div class="col-md-6 col-lg-4 project-item" data-cat="emailer">
+        <div class="project-card h-100">
+          <div class="project-img" style="background:#0d0d14;overflow:hidden;position:relative;height:210px;">
+            <iframe src="https://1000demo.github.io/etdemo/e3" style="position:absolute;top:0;left:0;width:166%;height:166%;border:none;transform:scale(0.6);transform-origin:top left;pointer-events:none;" scrolling="no" loading="lazy"></iframe>
+          </div>
+          <div class="project-body">
+            <div class="project-tag">Emailer · HTML Template</div>
+            <div class="project-name">Email Template – E3</div>
+            <div class="project-desc">Pixel-perfect responsive email design with structured content blocks and cross-client compatibility.</div>
+            <div class="project-tech"><span class="tech-pill">HTML5</span><span class="tech-pill">CSS3</span><span class="tech-pill">Email</span></div>
+            <div class="project-links"><a href="https://1000demo.github.io/etdemo/e3" target="_blank" class="proj-link">↗ View Live</a></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Emailer 3 -->
+      <div class="col-md-6 col-lg-4 project-item" data-cat="emailer">
+        <div class="project-card h-100">
+          <div class="project-img" style="background:#0d0d14;overflow:hidden;position:relative;height:210px;">
+            <iframe src="https://1000demo.github.io/etdemo/e4" style="position:absolute;top:0;left:0;width:166%;height:166%;border:none;transform:scale(0.6);transform-origin:top left;pointer-events:none;" scrolling="no" loading="lazy"></iframe>
+          </div>
+          <div class="project-body">
+            <div class="project-tag">Emailer · HTML Template</div>
+            <div class="project-name">Email Template – E4</div>
+            <div class="project-desc">Professional email newsletter with hero section, content blocks, and responsive table layout.</div>
+            <div class="project-tech"><span class="tech-pill">HTML5</span><span class="tech-pill">CSS3</span><span class="tech-pill">Email</span></div>
+            <div class="project-links"><a href="https://1000demo.github.io/etdemo/e4" target="_blank" class="proj-link">↗ View Live</a></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Emailer 4 -->
+      <div class="col-md-6 col-lg-4 project-item" data-cat="emailer">
+        <div class="project-card h-100">
+          <div class="project-img" style="background:#0d0d14;overflow:hidden;position:relative;height:210px;">
+            <iframe src="https://1000demo.github.io/etdemo/e5" style="position:absolute;top:0;left:0;width:166%;height:166%;border:none;transform:scale(0.6);transform-origin:top left;pointer-events:none;" scrolling="no" loading="lazy"></iframe>
+          </div>
+          <div class="project-body">
+            <div class="project-tag">Emailer · HTML Template</div>
+            <div class="project-name">Email Template – E5</div>
+            <div class="project-desc">Clean promotional email template with bold typography, CTA buttons, and multi-client tested layout.</div>
+            <div class="project-tech"><span class="tech-pill">HTML5</span><span class="tech-pill">CSS3</span><span class="tech-pill">Email</span></div>
+            <div class="project-links"><a href="https://1000demo.github.io/etdemo/e5" target="_blank" class="proj-link">↗ View Live</a></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /row -->
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-5 reveal">
+        <div style="position:relative; display:inline-block; max-width:360px; width:100%;">
+          <div class="about-img">👨‍💻</div>
+          <div class="about-img-badge"><span>11+</span>Years of<br>Experience</div>
+        </div>
+      </div>
+      <div class="col-lg-7 reveal reveal-delay-1">
+        <p class="section-label">✦ Who I Am</p>
+        <h2 class="section-title">ABOUT<br>ME</h2>
+        <div class="divider-line"></div>
+        <p style="font-size:0.85rem; color:var(--text-dim); line-height:2; margin-bottom:1.2rem;">
+          Hey! I'm <strong style="color:var(--text);">Ketan R. Gawande</strong>, a UI Developer from Pune with over 11 years of experience building end-to-end user interfaces for mobile, iPad, and desktop platforms.
+        </p>
+        <p style="font-size:0.85rem; color:var(--text-dim); line-height:2; margin-bottom:2rem;">
+          I specialize in translating UI/UX designs from Figma and PSD into clean, W3C-compliant, highly responsive HTML/CSS with minimal redundancy. I've worked across Healthcare, E-commerce, and Real Estate industries and handle projects independently with a strong focus on cross-browser compatibility and accessibility.
+        </p>
+
+        <div class="skill-bar-wrap">
+          <div class="mb-3">
+            <div class="skill-label"><span>HTML5 / CSS3 / SASS</span><span>98%</span></div>
+            <div class="skill-bar"><div class="skill-fill" data-width="98"></div></div>
+          </div>
+          <div class="mb-3">
+            <div class="skill-label"><span>Bootstrap / Tailwind CSS</span><span>95%</span></div>
+            <div class="skill-bar"><div class="skill-fill" data-width="95"></div></div>
+          </div>
+          <div class="mb-3">
+            <div class="skill-label"><span>JavaScript / jQuery / Angular</span><span>85%</span></div>
+            <div class="skill-bar"><div class="skill-fill" data-width="85"></div></div>
+          </div>
+          <div class="mb-3">
+            <div class="skill-label"><span>Figma / PSD to HTML</span><span>92%</span></div>
+            <div class="skill-bar"><div class="skill-fill" data-width="92"></div></div>
+          </div>
+          <div class="mb-3">
+            <div class="skill-label"><span>WordPress / Flutter UI</span><span>78%</span></div>
+            <div class="skill-bar"><div class="skill-fill" data-width="78"></div></div>
+          </div>
+        </div>
+
+        <div class="about-tools">
+          <span class="tool-chip">HTML5</span>
+          <span class="tool-chip">CSS3</span>
+          <span class="tool-chip">SASS</span>
+          <span class="tool-chip">JavaScript</span>
+          <span class="tool-chip">Angular</span>
+          <span class="tool-chip">jQuery</span>
+          <span class="tool-chip">Bootstrap</span>
+          <span class="tool-chip">Tailwind CSS</span>
+          <span class="tool-chip">Flutter UI</span>
+          <span class="tool-chip">Figma</span>
+          <span class="tool-chip">Photoshop</span>
+          <span class="tool-chip">WordPress</span>
+          <span class="tool-chip">Git</span>
+          <span class="tool-chip">VS Code</span>
+          <span class="tool-chip">Cursor AI</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="container">
+    <div class="reveal text-center mb-5">
+      <p class="section-label">✦ Career Journey</p>
+      <h2 class="section-title">WORK<br>EXPERIENCE</h2>
+      <div class="divider-line mx-auto"></div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-lg-9 reveal">
+        <div class="timeline">
+
+          <div class="timeline-item">
+            <div class="timeline-date">May 2018 — Feb 2026 · 7 yrs 9 mos</div>
+            <div class="timeline-role">UI Developer</div>
+            <div class="timeline-org">Radamatic Solutions Pvt. Ltd., Pune</div>
+            <div class="timeline-desc">
+              Managed all UI for healthcare projects including a PACS radiology platform, clinical management system (Civie), and admin dashboards. Built and maintained responsive interfaces compatible with Chrome and IE11. Translated Figma/Keen UI designs into production-ready code for complex enterprise web apps.
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-date">Jun 2016 — May 2018 · 2 yrs</div>
+            <div class="timeline-role">UI Developer</div>
+            <div class="timeline-org">Immply India Pvt. Ltd., Pune</div>
+            <div class="timeline-desc">
+              Developed and managed UI modules for e-commerce platforms including Beyond Yoga, Wilson's Leather, and Marine Depot. Ensured pixel-perfect, fully responsive layouts across all devices from desktop to mobile with cross-browser compatibility.
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-date">Aug 2015 — Mar 2016</div>
+            <div class="timeline-role">UI Developer / WordPress Developer</div>
+            <div class="timeline-org">Setu Advertising Pvt. Ltd., Pune</div>
+            <div class="timeline-desc">
+              Responsible for installation, configuration, and maintenance of WordPress themes and plugins. Built and managed websites for real estate and digital advertising clients. Created contact forms to handle user feedback and enquiries.
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-date">Mar 2015 — Jun 2015</div>
+            <div class="timeline-role">Frontend Developer</div>
+            <div class="timeline-org">Shoptimize India Pvt. Ltd., Pune</div>
+            <div class="timeline-desc">
+              Fixed front-end layout issues across e-commerce platforms. Debugged and troubleshot existing HTML/CSS/JavaScript code using Firebug and Chrome DevTools. Worked on professionally structured frontend pages for art and fashion e-commerce sites.
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="reveal text-center mb-5">
+      <p class="section-label">✦ Let's Work Together</p>
+      <h2 class="section-title">GET IN<br>TOUCH</h2>
+      <div class="divider-line mx-auto"></div>
+    </div>
+    <div class="row g-4 align-items-stretch">
+      <div class="col-lg-4 reveal">
+        <div class="contact-card h-100">
+          <h4 style="font-family:'Syne',sans-serif; font-weight:700; margin-bottom:0.5rem; font-size:1.2rem;">Say hello 👋</h4>
+          <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:1.5rem; line-height:1.8;">
+            Looking for a senior UI developer? I'd love to hear about your project. I'll get back within 24 hours.
+          </p>
+          <div style="display:flex;gap:0.75rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+            <a href="https://github.com/1000demo" target="_blank" title="GitHub" style="width:42px;height:42px;background:rgba(0,245,160,0.08);border:1px solid rgba(0,245,160,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#9999b5;font-size:1.2rem;text-decoration:none;transition:all 0.3s;" onmouseover="this.style.color='#00f5a0';this.style.borderColor='#00f5a0';this.style.transform='translateY(-3px)'" onmouseout="this.style.color='#9999b5';this.style.borderColor='rgba(0,245,160,0.2)';this.style.transform='translateY(0)'"><i class="bi bi-github"></i></a>
+            <a href="https://linkedin.com/in/ketangawande" target="_blank" title="LinkedIn" style="width:42px;height:42px;background:rgba(0,245,160,0.08);border:1px solid rgba(0,245,160,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#9999b5;font-size:1.2rem;text-decoration:none;transition:all 0.3s;" onmouseover="this.style.color='#00f5a0';this.style.borderColor='#00f5a0';this.style.transform='translateY(-3px)'" onmouseout="this.style.color='#9999b5';this.style.borderColor='rgba(0,245,160,0.2)';this.style.transform='translateY(0)'"><i class="bi bi-linkedin"></i></a>
+            <a href="https://twitter.com/" target="_blank" title="Twitter/X" style="width:42px;height:42px;background:rgba(0,245,160,0.08);border:1px solid rgba(0,245,160,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#9999b5;font-size:1.2rem;text-decoration:none;transition:all 0.3s;" onmouseover="this.style.color='#00f5a0';this.style.borderColor='#00f5a0';this.style.transform='translateY(-3px)'" onmouseout="this.style.color='#9999b5';this.style.borderColor='rgba(0,245,160,0.2)';this.style.transform='translateY(0)'"><i class="bi bi-twitter-x"></i></a>
+            <a href="https://wa.me/" target="_blank" title="WhatsApp" style="width:42px;height:42px;background:rgba(0,245,160,0.08);border:1px solid rgba(0,245,160,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#9999b5;font-size:1.2rem;text-decoration:none;transition:all 0.3s;" onmouseover="this.style.color='#00f5a0';this.style.borderColor='#00f5a0';this.style.transform='translateY(-3px)'" onmouseout="this.style.color='#9999b5';this.style.borderColor='rgba(0,245,160,0.2)';this.style.transform='translateY(0)'"><i class="bi bi-whatsapp"></i></a>
+          </div>
+          <div class="contact-info-item">
+            <div class="contact-icon"><i class="bi bi-envelope" style="color:#00f5a0;font-size:1.1rem;"></i></div>
+            <div class="contact-info-text">
+              <div class="contact-info-title">Email</div>
+              <a href="/cdn-cgi/l/email-protection#f9929c8d9897d79e988e98979d9ccbcab99e94989095d79a9694"><span class="__cf_email__" data-cfemail="660d031207084801071107080203545526010b070f0a4805090b">[email&#160;protected]</span></a>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <div class="contact-icon"><i class="bi bi-geo-alt" style="color:#00f5a0;font-size:1.1rem;"></i></div>
+            <div class="contact-info-text">
+              <div class="contact-info-title">Location</div>
+              <a href="#">Kirkitwadi, Sinhgad Road, Pune – 411024</a>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <div class="contact-icon"><i class="bi bi-globe2" style="color:#00f5a0;font-size:1.1rem;"></i></div>
+            <div class="contact-info-text">
+              <div class="contact-info-title">Portfolio</div>
+              <a href="https://1000demo.github.io/portfolio/" target="_blank">1000demo.github.io/portfolio</a>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <div class="contact-icon"><i class="bi bi-mortarboard" style="color:#00f5a0;font-size:1.1rem;"></i></div>
+            <div class="contact-info-text">
+              <div class="contact-info-title">Education</div>
+              <a href="#">MCA – Pune University, 2014</a>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <div class="contact-icon"><i class="bi bi-file-earmark-arrow-down" style="color:#00f5a0;font-size:1.1rem;"></i></div>
+            <div class="contact-info-text">
+              <div class="contact-info-title"></div>
+              <a href="#">Download CV</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8 reveal reveal-delay-1">
+        <div class="contact-card h-100">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Name</label>
+              <input type="text" class="form-ctrl" placeholder="Your name">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-ctrl" placeholder="your@email.com">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Subject</label>
+              <input type="text" class="form-ctrl" placeholder="Project inquiry / Freelance / Collab">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Message</label>
+              <textarea class="form-ctrl" placeholder="Tell me about your project..."></textarea>
+            </div>
+            <div class="col-12">
+              <button class="btn-glow" style="width:100%; text-align:center;" id="sendBtn">
+                Send Message ✦
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>Designed & Built by <span>Ketan Gawande</span> &nbsp;·&nbsp; UI Developer &nbsp;·&nbsp; Pune, India &nbsp;·&nbsp; 2026</p>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+  });
+  function animateRing() {
+    rx += (mx - rx) * 0.15; ry += (my - ry) * 0.15;
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+  document.querySelectorAll('a, button, .project-card, .tool-chip').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.width = '20px'; cursor.style.height = '20px'; ring.style.width = '60px'; ring.style.height = '60px'; });
+    el.addEventListener('mouseleave', () => { cursor.style.width = '12px'; cursor.style.height = '12px'; ring.style.width = '40px'; ring.style.height = '40px'; });
+  });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        entry.target.querySelectorAll('.skill-fill').forEach(bar => { bar.style.width = bar.dataset.width + '%'; });
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal, .project-card').forEach(el => observer.observe(el));
+
+  // Counter
+  function animateCounter(el, target, duration = 1800) {
+    let start = 0;
+    const step = (ts) => {
+      if (!start) start = ts;
+      const p = Math.min((ts - start) / duration, 1);
+      el.textContent = Math.floor(p * target);
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = target;
+    };
+    requestAnimationFrame(step);
+  }
+  const cObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.querySelectorAll('.counter').forEach(c => animateCounter(c, parseInt(c.dataset.target)));
+        cObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  cObs.observe(document.querySelector('.stats-row'));
+
+  // Filter tabs
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      document.querySelectorAll('.project-item').forEach(item => {
+        if (filter === 'all' || item.dataset.cat === filter) {
+          item.classList.remove('hidden');
+          // re-trigger reveal
+          setTimeout(() => { item.querySelector('.project-card').classList.add('visible'); }, 50);
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+    });
+  });
+
+  // Send btn
+  document.getElementById('sendBtn').addEventListener('click', () => {
+    const btn = document.getElementById('sendBtn');
+    btn.textContent = 'Sending...';
+    setTimeout(() => { btn.textContent = 'Message Sent ✦'; btn.style.background = '#00d9f5'; }, 1500);
+  });
+</script>
+</body>
+</html>
